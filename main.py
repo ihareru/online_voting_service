@@ -4,20 +4,32 @@ def check_choice(db, vote):
     return False
 
 
-def voting(db):
+def tally_votes(num_votes):
     max_count = 0
-    number_votes = {}
     best_choice = ''
+    for model, count in num_votes.items():
+        if max_count < count:
+            max_count = count
+            best_choice = model
+    display_results(max_count, best_choice)
+
+
+def display_results(max, best):
+    print('Лучший автомобиль года:', best)
+    print('Количество голосов:', max)
+
+
+def get_user_input(prompt):
+    return input(prompt).upper()
+
+
+def collect_votes(db):
+    number_votes = {}
     while True:
-        choice = input('Ваш выбор?: ').upper()
+        choice = get_user_input('Ваш выбор?: ')
         if choice == '0':
-            print('Голосование завершено!')
-            for model, count in number_votes.items():
-                if max_count < count:
-                    max_count = count
-                    best_choice = model
-            print('Лучший автомобиль года:', best_choice)
-            print('Количество голосов:', max_count)
+            print('Голосование завершено!\n')
+            tally_votes(number_votes)
             break
         else:
             if check_choice(db, choice):
@@ -33,16 +45,17 @@ def voting(db):
 def main():
     database = []
     print('Голосование за автомобиль года!\n')
-    num = int(input('Сколько моделей авто учавствует в голосовании?: '))
+    num = int(get_user_input('Сколько моделей авто учавствует в голосовании?: '))
     for i_model in range(1, num + 1):
-        database.append(input(f'Введите модель {i_model}-го автомобиля: ').upper())
+        database.append(get_user_input(f'Введите модель {i_model}-го автомобиля: '))
     database = set(database)
-    print('Голосование создано!')
+    print('\nГолосование создано!')
     print('Выберите модель из списка:', end=' ')
     for model in database:
         print(model, end='; ')
+
     print('\nДля подсчета голосов введите 0\n')
-    voting(database)
+    collect_votes(database)
 
 
 if __name__ == '__main__':
